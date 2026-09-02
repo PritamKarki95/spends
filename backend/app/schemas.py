@@ -56,3 +56,19 @@ class TransactionOut(BaseModel):
 class ConfirmImportResponse(BaseModel):
     imported_count: int
     transactions: list[TransactionOut]
+
+class TransactionCreate(BaseModel):
+    date: str
+    description: str
+    merchant: str | None = None
+    amount: float
+    type: str
+
+
+class TransactionUpdate(BaseModel):
+    date: str | None = None
+    description: str | None = None
+    merchant: str | None = None
+    amount: float | None = None
+    type: str | None = None
+    category_id: int | None = None
