@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, EmailStr
 
 class UserCreate(BaseModel):
@@ -51,6 +53,22 @@ class TransactionOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class TransactionCreate(BaseModel):
+    date: str
+    description: str
+    merchant: str | None = None
+    amount: float
+    type: Literal["debit", "credit"]
+
+
+class TransactionUpdate(BaseModel):
+    date: str | None = None
+    description: str | None = None
+    merchant: str | None = None
+    amount: float | None = None
+    type: Literal["debit", "credit"] | None = None
 
 
 class ConfirmImportResponse(BaseModel):

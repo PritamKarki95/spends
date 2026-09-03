@@ -5,6 +5,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import UploadStatement from './pages/UploadStatement'
+import Transactions from './pages/Transactions'
 
 function App() {
   return (
@@ -25,6 +26,14 @@ function App() {
         element={
           <ProtectedRoute>
             <UploadStatement />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/transactions"
+        element={
+          <ProtectedRoute>
+            <Transactions />
           </ProtectedRoute>
         }
       />
