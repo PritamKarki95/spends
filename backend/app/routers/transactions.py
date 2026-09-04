@@ -6,6 +6,7 @@ from sqlalchemy import or_
 from app.database import get_db
 from app.auth import get_current_user
 from app import models, schemas
+from app.services.categorizer import categorize
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
@@ -48,10 +49,10 @@ def list_transactions(
         schemas.TransactionOut(
             id=t.id, date=t.date.isoformat(), description=t.description,
             merchant=t.merchant, amount=float(t.amount), type=t.type,
+            category=t.category.name if t.category else None,
         )
         for t in results
     ]
-
 
 @router.post("", response_model=schemas.TransactionOut, status_code=201)
 def create_transaction(
@@ -59,6 +60,11 @@ def create_transaction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
+    category_name = categorize(payload.description)
+    category = db.query(models.Category).filter(
+        models.Category.name == category_name, models.Category.is_default == True
+    ).first()
+
     txn = models.Transaction(
         user_id=current_user.id,
         statement_id=None,  # manual entry
@@ -67,7 +73,8 @@ def create_transaction(
         merchant=payload.merchant,
         amount=payload.amount,
         type=payload.type,
-        category_source="user",
+        category_id=category.id if category else None,
+        category_source="user",  # user manually entered this transaction (categorized by rule, but source is 'user' entry)
     )
     db.add(txn)
     db.commit()
@@ -75,6 +82,7 @@ def create_transaction(
     return schemas.TransactionOut(
         id=txn.id, date=txn.date.isoformat(), description=txn.description,
         merchant=txn.merchant, amount=float(txn.amount), type=txn.type,
+        category=t.category.name if t.category else None,
     )
 
 
@@ -105,6 +113,7 @@ def update_transaction(
     return schemas.TransactionOut(
         id=txn.id, date=txn.date.isoformat(), description=txn.description,
         merchant=txn.merchant, amount=float(txn.amount), type=txn.type,
+        category=t.category.name if t.category else None,
     )
 
 

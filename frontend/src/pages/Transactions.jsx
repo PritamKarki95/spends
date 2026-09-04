@@ -233,6 +233,7 @@ function Transactions() {
                 <th className="px-4 py-2 text-left">Merchant</th>
                 <th className="px-4 py-2 text-left">Amount</th>
                 <th className="px-4 py-2 text-left">Type</th>
+                <th className="px-4 py-2 text-left">Category</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -297,6 +298,7 @@ function Transactions() {
                       <td className="px-4 py-2">{t.merchant}</td>
                       <td className="px-4 py-2">${t.amount.toFixed(2)}</td>
                       <td className="px-4 py-2">{t.type}</td>
+                      <td className="px-4 py-2">{t.category || 'Uncategorized'}</td>
                       <td className="px-4 py-2 space-x-2">
                         <button onClick={() => startEdit(t)} className="text-blue-600 hover:underline">
                           Edit

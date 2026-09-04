@@ -3,12 +3,14 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 import pdfplumber
-
 from app.database import get_db
 from app.auth import get_current_user
 from app import models, schemas
 from app.services.pdf_parser import parse_statement_text
 from datetime import datetime
+from app.services.pdf_parser import parse_statement_text
+from app.services.categorizer import categorize
+
 
 router = APIRouter(prefix="/statements", tags=["statements"])
 
@@ -100,6 +102,11 @@ def confirm_import(
 
     created = []
     for t in payload.transactions:
+        category_name = categorize(t.description)
+        category = db.query(models.Category).filter(
+            models.Category.name == category_name, models.Category.is_default == True
+        ).first()
+
         txn = models.Transaction(
             user_id=current_user.id,
             statement_id=statement.id,
@@ -108,6 +115,7 @@ def confirm_import(
             merchant=t.merchant,
             amount=t.amount,
             type=t.type,
+            category_id=category.id if category else None,
             category_source="rule",
         )
         db.add(txn)
