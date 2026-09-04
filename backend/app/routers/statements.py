@@ -8,9 +8,7 @@ from app.auth import get_current_user
 from app import models, schemas
 from app.services.pdf_parser import parse_statement_text
 from datetime import datetime
-from app.services.pdf_parser import parse_statement_text
-from app.services.categorizer import categorize
-
+from app.services.categorizer import categorize_transaction
 
 router = APIRouter(prefix="/statements", tags=["statements"])
 
@@ -52,7 +50,6 @@ async def upload_statement(
     db.commit()
     db.refresh(statement)
 
-    # --- Extract text and parse ---
     try:
         with pdfplumber.open(filepath) as pdf:
             full_text = "\n".join(
@@ -102,7 +99,7 @@ def confirm_import(
 
     created = []
     for t in payload.transactions:
-        category_name = categorize(t.description)
+        category_name, source = categorize_transaction(t.description)
         category = db.query(models.Category).filter(
             models.Category.name == category_name, models.Category.is_default == True
         ).first()
@@ -116,7 +113,7 @@ def confirm_import(
             amount=t.amount,
             type=t.type,
             category_id=category.id if category else None,
-            category_source="rule",
+            category_source=source,
         )
         db.add(txn)
         created.append(txn)
@@ -131,6 +128,7 @@ def confirm_import(
             schemas.TransactionOut(
                 id=t.id, date=t.date.isoformat(), description=t.description,
                 merchant=t.merchant, amount=float(t.amount), type=t.type,
+                category=t.category.name if t.category else None,
             )
             for t in created
         ],

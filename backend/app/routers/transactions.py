@@ -6,7 +6,7 @@ from sqlalchemy import or_
 from app.database import get_db
 from app.auth import get_current_user
 from app import models, schemas
-from app.services.categorizer import categorize
+from app.services.categorizer import categorize_transaction
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
@@ -60,7 +60,7 @@ def create_transaction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    category_name = categorize(payload.description)
+    category_name, source = categorize_transaction(payload.description)
     category = db.query(models.Category).filter(
         models.Category.name == category_name, models.Category.is_default == True
     ).first()
@@ -74,7 +74,7 @@ def create_transaction(
         amount=payload.amount,
         type=payload.type,
         category_id=category.id if category else None,
-        category_source="user",  # user manually entered this transaction (categorized by rule, but source is 'user' entry)
+        category_source=source,
     )
     db.add(txn)
     db.commit()
@@ -82,8 +82,9 @@ def create_transaction(
     return schemas.TransactionOut(
         id=txn.id, date=txn.date.isoformat(), description=txn.description,
         merchant=txn.merchant, amount=float(txn.amount), type=txn.type,
-        category=t.category.name if t.category else None,
+        category=txn.category.name if txn.category else None,
     )
+    
 
 
 @router.patch("/{transaction_id}", response_model=schemas.TransactionOut)
@@ -113,7 +114,7 @@ def update_transaction(
     return schemas.TransactionOut(
         id=txn.id, date=txn.date.isoformat(), description=txn.description,
         merchant=txn.merchant, amount=float(txn.amount), type=txn.type,
-        category=t.category.name if t.category else None,
+        category=txn.category.name if txn.category else None,
     )
 
 

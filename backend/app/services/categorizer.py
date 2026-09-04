@@ -6,6 +6,8 @@ name. This is the baseline categorizer — a future ML model (TF-IDF +
 Logistic Regression) trains on this data plus user corrections.
 """
 
+from app.services.ml_categorizer import predict as ml_predict
+
 RULES: dict[str, str] = {
     "MCDONALD": "Food", "WENDYS": "Food", "CHIPOTLE": "Food",
     "STARBUCKS": "Food", "DOORDASH": "Food", "UBER EATS": "Food",
@@ -40,3 +42,13 @@ def categorize(description: str) -> str:
         if keyword in upper_desc:
             return category
     return "Other"
+
+def categorize_transaction(description: str) -> tuple[str, str]:
+    """
+    checks for ML model first if not trained goes back to rule-based 
+    """
+    ml_result = ml_predict(description)
+    if ml_result is not None:
+        return ml_result, "ml"
+
+    return categorize(description), "rule"
