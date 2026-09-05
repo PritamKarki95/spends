@@ -121,3 +121,38 @@ def compare_months_by_merchant(
 
     results.sort(key=lambda c: abs(c.change), reverse=True)
     return {"category": category_name, "merchants": results}
+
+
+@router.get("/months/{year_a}/{month_a}/category/{category_name}/merchant/{merchant_name}")
+def transactions_for_merchant(
+    year_a: int, month_a: int, category_name: str, merchant_name: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """The bottom of the drill-down: actual transactions for one merchant, one month."""
+    start = date(year_a, month_a, 1)
+    end = date(year_a, month_a, monthrange(year_a, month_a)[1])
+
+    transactions = (
+        db.query(models.Transaction)
+        .join(models.Category, models.Transaction.category_id == models.Category.id)
+        .filter(
+            models.Transaction.user_id == current_user.id,
+            models.Category.name == category_name,
+            models.Transaction.merchant == merchant_name,
+            models.Transaction.date >= start,
+            models.Transaction.date <= end,
+        )
+        .order_by(models.Transaction.date.desc())
+        .all()
+    )
+
+    return [
+        {
+            "id": t.id,
+            "date": t.date.isoformat(),
+            "description": t.description,
+            "amount": float(t.amount),
+        }
+        for t in transactions
+    ]

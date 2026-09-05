@@ -8,6 +8,8 @@ function MonthlyComparison() {
   const [merchantData, setMerchantData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [expandedMerchant, setExpandedMerchant] = useState(null)
+  const [merchantTransactions, setMerchantTransactions] = useState(null)
 
   async function fetchComparison() {
     setLoading(true)
@@ -30,15 +32,35 @@ function MonthlyComparison() {
     setExpandedCategory(null)
     setMerchantData(null)
   }, [currentMonth, previousMonth])
+  
+  async function toggleMerchant(merchantName) {
+    if (expandedMerchant === merchantName) {
+        setExpandedMerchant(null)
+        setMerchantTransactions(null)
+        return
+  }
+
+  setExpandedMerchant(merchantName)
+  const token = localStorage.getItem('token')
+  const url = `http://127.0.0.1:8000/comparisons/months/${currentMonth.year}/${currentMonth.month}/category/${encodeURIComponent(expandedCategory)}/merchant/${encodeURIComponent(merchantName)}`
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+  if (response.ok) {
+    setMerchantTransactions(await response.json())
+  }
+}
 
   async function toggleCategory(categoryName) {
     if (expandedCategory === categoryName) {
       setExpandedCategory(null)
       setMerchantData(null)
+      setExpandedMerchant(null)
+      setMerchantTransactions(null)
       return
     }
 
     setExpandedCategory(categoryName)
+    setExpandedMerchant(null)
+    setMerchantTransactions(null)
     const token = localStorage.getItem('token')
     const url = `http://127.0.0.1:8000/comparisons/months/${currentMonth.year}/${currentMonth.month}/${previousMonth.year}/${previousMonth.month}/category/${encodeURIComponent(categoryName)}`
     const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
@@ -129,17 +151,37 @@ function MonthlyComparison() {
                 </button>
 
                 {expandedCategory === cat.category && merchantData && (
-                  <div className="bg-gray-50 px-4 pb-4">
-                    {merchantData.merchants.map((m) => (
-                      <div key={m.category} className="flex justify-between py-2 border-t border-gray-200 text-sm">
-                        <span>{m.category}</span>
-                        <span className={m.change >= 0 ? 'text-red-600' : 'text-green-600'}>
-                          {m.change >= 0 ? '+' : ''}${m.change.toFixed(2)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+        <div className="bg-gray-50 px-4 pb-4">
+           {merchantData.merchants.map((m) => (
+           <div key={m.category}>
+                <button
+                onClick={() => toggleMerchant(m.category)}
+                className="w-full flex justify-between py-2 border-t border-gray-200 text-sm hover:bg-gray-100 text-left"
+                >
+                    <span>{m.category}</span>
+                    <span className={m.change >= 0 ? 'text-red-600' : 'text-green-600'}>
+                        {m.change >= 0 ? '+' : ''}${m.change.toFixed(2)}
+          </span>
+        </button>
+
+        {expandedMerchant === m.category && merchantTransactions && (
+          <div className="pl-4 pb-2">
+            {merchantTransactions.map((txn) => (
+              <div key={txn.id} className="flex justify-between py-1 text-xs text-gray-600">
+                <span>{txn.date} — {txn.description}</span>
+                <span>${txn.amount.toFixed(2)}</span>
+              </div>
+            ))}
+            {merchantTransactions.length === 0 && (
+              <p className="text-xs text-gray-400 py-1">No transactions this month.</p>
+            )}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+)}
+
               </div>
             ))}
           </div>
