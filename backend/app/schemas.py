@@ -70,3 +70,20 @@ class TransactionUpdate(BaseModel):
     amount: float | None = None
     type: str | None = None
     category_id: int | None = None 
+
+class CategoryComparison(BaseModel):
+    category: str
+    current_amount: float
+    previous_amount: float
+    change: float
+    percent_change: float | None  
+
+
+class MonthComparisonResponse(BaseModel):
+    current_month: str   # "2026-08"
+    previous_month: str  # "2026-07"
+    current_total: float
+    previous_total: float
+    total_change: float
+    total_percent_change: float | None
+    categories: list[CategoryComparison]  

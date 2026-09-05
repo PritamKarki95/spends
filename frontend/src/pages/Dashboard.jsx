@@ -17,6 +17,9 @@ function Dashboard() {
 <Link to="/transactions" className="mt-4 ml-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
   Transactions
 </Link>
+<Link to="/comparison" className="mt-4 ml-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+  Monthly Comparison
+</Link>
       <button
         onClick={handleLogout}
         className="mt-4 px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"

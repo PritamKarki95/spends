@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import UploadStatement from './pages/UploadStatement'
 import Transactions from './pages/Transactions'
+import MonthlyComparison from './pages/MonthlyComparison'
 
 function App() {
   return (
@@ -37,6 +38,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/comparison"
+  element={
+    <ProtectedRoute>
+      <MonthlyComparison />
+    </ProtectedRoute>
+  }
+/>
     </Routes>
   )
 }

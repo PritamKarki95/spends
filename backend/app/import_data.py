@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from app.database import SessionLocal
 from app import models
+from app.services.pdf_parser import _normalize_merchant
 
 CSV_PATH = Path(__file__).resolve().parent.parent / "demo_transactions.csv"
 
@@ -34,7 +35,7 @@ def main():
                     statement_id=None,
                     date=datetime.strptime(row["date"], "%Y-%m-%d").date(),
                     description=row["description"],
-                    merchant=row["description"],
+                    merchant=_normalize_merchant(row["description"]),
                     amount=float(row["amount"]),
                     type=row["type"],
                     category_id=category.id if category else None,

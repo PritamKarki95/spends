@@ -7,6 +7,7 @@ from app.routers import auth as auth_router
 
 from app.routers import statements as statements_router
 from app.routers import transactions as transactions_router
+from app.routers import comparisons as comparisons_router
 
 
 app = FastAPI(title=settings.app_name)
@@ -15,6 +16,7 @@ app.include_router(auth_router.router)
 
 app.include_router(statements_router.router)
 app.include_router(transactions_router.router)
+app.include_router(comparisons_router.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],  
