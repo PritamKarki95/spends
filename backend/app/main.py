@@ -20,6 +20,8 @@ from app.routers import transactions as transactions_router
 from app.routers import comparisons as comparisons_router
 from app.routers import subscriptions as subscriptions_router
 from app.routers import anomalies as anomalies_router
+from app.routers import forecast as forecast_router
+
 
 app = FastAPI(title=settings.app_name)
 
@@ -30,6 +32,7 @@ app.include_router(transactions_router.router)
 app.include_router(comparisons_router.router)
 app.include_router(subscriptions_router.router)
 app.include_router(anomalies_router.router)
+app.include_router(forecast_router.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],

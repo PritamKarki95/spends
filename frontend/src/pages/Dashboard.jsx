@@ -1,5 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
 import AnomaliesWidget from '../components/AnomaliesWidget'
+import ForecastWidget from '../components/ForecastWidget'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -28,6 +29,7 @@ function Dashboard() {
         Log Out
       </button>
       <AnomaliesWidget />
+      <ForecastWidget />
     </div>
   )
 }
