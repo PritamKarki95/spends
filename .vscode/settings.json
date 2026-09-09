@@ -1,5 +1,4 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": true
 }

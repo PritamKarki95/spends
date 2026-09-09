@@ -161,8 +161,8 @@ function MonthlyComparison() {
                     <span>{m.category}</span>
                     <span className={m.change >= 0 ? 'text-red-600' : 'text-green-600'}>
                         {m.change >= 0 ? '+' : ''}${m.change.toFixed(2)}
-          </span>
-        </button>
+                        </span>
+                        </button>
 
         {expandedMerchant === m.category && merchantTransactions && (
           <div className="pl-4 pb-2">

@@ -19,7 +19,7 @@ from app.routers import statements as statements_router
 from app.routers import transactions as transactions_router
 from app.routers import comparisons as comparisons_router
 from app.routers import subscriptions as subscriptions_router
-
+from app.routers import anomalies as anomalies_router
 
 app = FastAPI(title=settings.app_name)
 
@@ -29,14 +29,19 @@ app.include_router(statements_router.router)
 app.include_router(transactions_router.router)
 app.include_router(comparisons_router.router)
 app.include_router(subscriptions_router.router)
+app.include_router(anomalies_router.router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def read_root():
-    return {"status": f"{settings.app_name} is running", "environment": settings.environment}
+    return {
+        "status": f"{settings.app_name} is running",
+        "environment": settings.environment,
+    }

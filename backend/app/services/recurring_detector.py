@@ -1,56 +1,58 @@
-"""Identify likely recurring payments using amount and interval consistency."""
-
 from collections import defaultdict
-from statistics import mean, median, pstdev
+from statistics import mean, pstdev
 
-
+MIN_OCCURRENCES = 3
+AMOUNT_VARIATION_TOLERANCE = 0.15
 INTERVAL_TARGET_DAYS = 30
 INTERVAL_TOLERANCE_DAYS = 6
 
 
-def detect_recurring(transactions):
-    """Require three debits, amounts within 10%, and consistent monthly intervals.
-
-    Confidence is a heuristic score, not a statistical probability.
-    Transaction dates must be date objects, as supplied by the router.
+def detect_recurring(transactions: list[dict]) -> list[dict]:
     """
-    merchants = defaultdict(list)
-    for transaction in transactions:
-        if transaction["type"] == "debit" and transaction["merchant"]:
-            merchants[transaction["merchant"]].append(transaction)
+    transactions: list of {"merchant": str, "amount": float, "date": date, "type": str}
+    Returns: list of {"merchant", "avg_amount", "interval_days", "confidence", "occurrences"}
+    """
+    by_merchant: dict[str, list[dict]] = defaultdict(list)
+    for t in transactions:
+        if t["type"] != "debit" or not t["merchant"]:
+            continue
+        by_merchant[t["merchant"]].append(t)
 
     results = []
-    for merchant, payments in merchants.items():
-        if len(payments) < 3:
+    for merchant, txns in by_merchant.items():
+        if len(txns) < MIN_OCCURRENCES:
             continue
-        payments.sort(key=lambda payment: payment["date"])
-        amounts = [abs(float(payment["amount"])) for payment in payments]
-        typical_amount = median(amounts)
-        if typical_amount == 0:
-            continue
-        amount_deviation = max(abs(amount - typical_amount) / typical_amount for amount in amounts)
-        amount_ok = amount_deviation <= 0.10
 
-        gaps = [(later["date"] - earlier["date"]).days
-                for earlier, later in zip(payments, payments[1:])]
-        avg_interval = mean(gaps)
-        interval_variation = pstdev(gaps)
+        txns_sorted = sorted(txns, key=lambda t: t["date"])
+        amounts = [t["amount"] for t in txns_sorted]
+        avg_amount = mean(amounts)
+        amount_variation = pstdev(amounts) / avg_amount if avg_amount > 0 else float("inf")
+
+        intervals = [
+            (txns_sorted[i]["date"] - txns_sorted[i - 1]["date"]).days
+            for i in range(1, len(txns_sorted))
+        ]
+        avg_interval = mean(intervals)
+        interval_variation = pstdev(intervals) if len(intervals) > 1 else 0
+
+        amount_ok = amount_variation <= AMOUNT_VARIATION_TOLERANCE
         interval_ok = (
-            all(gap > 0 for gap in gaps)
-            and abs(avg_interval - INTERVAL_TARGET_DAYS) <= INTERVAL_TOLERANCE_DAYS
+            abs(avg_interval - INTERVAL_TARGET_DAYS) <= INTERVAL_TOLERANCE_DAYS
             and interval_variation <= INTERVAL_TOLERANCE_DAYS
         )
-        if not (amount_ok and interval_ok):
-            continue
 
-        timing_deviation = mean(abs(gap - INTERVAL_TARGET_DAYS) / INTERVAL_TARGET_DAYS for gap in gaps)
-        confidence = min(0.99, 0.70 + 0.05 * (len(payments) - 3))
-        confidence -= amount_deviation + timing_deviation
-        results.append({
-            "merchant": merchant,
-            "avg_amount": round(mean(amounts), 2),
-            "interval_days": round(mean(gaps)),
-            "confidence": round(max(0, confidence), 2),
-        })
+        if amount_ok and interval_ok:
+            amount_confidence = max(0, 1 - amount_variation / AMOUNT_VARIATION_TOLERANCE)
+            interval_confidence = max(0, 1 - interval_variation / INTERVAL_TOLERANCE_DAYS)
+            confidence = round((amount_confidence + interval_confidence) / 2, 2)
 
-    return sorted(results, key=lambda result: (-result["confidence"], result["merchant"]))
+            results.append({
+                "merchant": merchant,
+                "avg_amount": round(avg_amount, 2),
+                "interval_days": round(avg_interval),
+                "confidence": confidence,
+                "occurrences": len(txns_sorted),
+            })
+
+    results.sort(key=lambda r: r["confidence"], reverse=True)
+    return results
