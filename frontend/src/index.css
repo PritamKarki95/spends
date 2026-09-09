@@ -1,1 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-display: "Space Grotesk", sans-serif;
+    --font-sans: "Inter", sans-serif;
+
+    --color-ink: #0A2540;
+    --color-ocean: #0E5C82;
+    --color-teal: #1FAE7D;
+    --color-mist: #F6FAF9;
+    --color-line: #E2ECE8;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-mist);
+    color: var(--color-ink);
+}
+
+.dark body {
+    background-color: #0A1F2E;
+    color: #EAF6F1;
+}
+
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
+
+@layer base {
+    button:not(:disabled), a {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+        transition: background-color 160ms ease, color 160ms ease, opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    button:not(:disabled) { cursor: pointer; }
+    button:disabled { cursor: not-allowed; }
+
+    :where(button, a, input, select):focus-visible {
+        outline: 2px solid var(--color-teal);
+        outline-offset: 3px;
+    }
+
+    @media (hover: hover) {
+        button:not(:disabled):hover { opacity: 0.9; }
+    }
+
+    button:not(:disabled):active { transform: translateY(1px); }
+}
+
+@keyframes page-enter {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter { animation: page-enter 260ms ease-out both; }
+
+@layer components {
+    .page-content { @apply max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 min-w-0; }
+    .page-title { @apply font-display text-2xl sm:text-3xl font-semibold text-ink dark:text-white; }
+    .surface { @apply rounded-2xl border border-line dark:border-white/10 bg-white dark:bg-[#102A3D] text-ink dark:text-white shadow-sm; }
+    .field { @apply min-w-0 max-w-full rounded-lg border border-line dark:border-white/20 bg-white dark:bg-[#102A3D] text-ink dark:text-white px-3 py-2 text-sm; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-enter { animation: none; }
+    .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    button, a, svg { transition: none !important; }
+}

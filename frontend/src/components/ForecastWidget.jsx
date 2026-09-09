@@ -1,3 +1,4 @@
+import { Skeleton, EmptyState } from './Feedback'
 import { useState, useEffect } from 'react'
 
 function ForecastWidget() {
@@ -23,15 +24,15 @@ function ForecastWidget() {
     fetchForecast()
   }, [])
 
-  if (loading) return <div className="bg-white rounded-lg shadow-md p-6 mt-4">Loading forecast...</div>
-  if (error) return <div className="bg-white rounded-lg shadow-md p-6 mt-4 text-red-600">{error}</div>
-  if (!data || !data.forecast.projection) return null
+  if (loading) return <Skeleton rows={2} label="Loading forecast" />
+  if (error) return <div className="bg-white dark:bg-[#102A3D] rounded-lg shadow-md p-6 mt-4 text-red-600 dark:text-red-400">{error}</div>
+  if (data?.forecast?.projection == null) return <div className="surface"><EmptyState title="Not enough history for a forecast" description="Import more months to see a spending projection." /></div>
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mt-4">
+    <div className="bg-white dark:bg-[#102A3D] border border-line dark:border-white/10 rounded-2xl shadow-sm p-6 mt-4">
       <h2 className="font-semibold mb-2">Next Month's Projected Spending</h2>
       <p className="text-3xl font-bold">${data.forecast.projection.toFixed(2)}</p>
-      <p className="text-sm text-gray-500 mt-1">
+      <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
         Based on the average of the last {data.forecast.window_used} month{data.forecast.window_used > 1 ? 's' : ''}
       </p>
 

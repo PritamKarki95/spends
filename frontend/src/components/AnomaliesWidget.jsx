@@ -1,4 +1,6 @@
+import { Skeleton } from './Feedback'
 import { useState, useEffect } from 'react'
+import { CategoryIcon } from '../utils/categoryIcons'
 
 function AnomaliesWidget() {
   const [anomalies, setAnomalies] = useState([])
@@ -24,25 +26,25 @@ function AnomaliesWidget() {
   }, [])
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mt-4">
+    <div className="bg-white dark:bg-[#102A3D] border border-line dark:border-white/10 rounded-2xl shadow-sm p-6 mt-4">
       <h2 className="font-semibold mb-3">⚠ Unusual Transactions</h2>
-      {loading && <p className="text-sm text-gray-500">Loading unusual transactions...</p>}
-      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+      {loading && <Skeleton rows={2} label="Loading unusual transactions" />}
+      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       {!loading && !error && anomalies.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 dark:text-white/60">
           No unusual transactions detected. Detection requires at least six categorized debit transactions in a category.
         </p>
       )}
       <div className="space-y-2">
         {anomalies.map((a) => (
-          <div key={a.id} className="flex justify-between items-center text-sm border-b pb-2 last:border-b-0">
+          <div key={a.id} className="flex flex-wrap gap-3 justify-between items-center text-sm border-b pb-2 last:border-b-0">
             <div>
               <p className="font-medium">{a.description}</p>
-              <p className="text-gray-500">
-                {a.date} · {a.category} · typical range ${a.category_typical_range[0]}-${a.category_typical_range[1]}
+              <p className="text-gray-500 dark:text-white/60">
+                {a.date} · <span className="inline-flex items-center gap-1 align-middle"><CategoryIcon category={a.category} size={16} />{a.category || 'Uncategorized'}</span> · typical range ${a.category_typical_range[0]}-${a.category_typical_range[1]}
               </p>
             </div>
-            <p className="font-medium text-orange-600">${a.amount.toFixed(2)}</p>
+            <p className="font-medium text-orange-600 dark:text-orange-400">${a.amount.toFixed(2)}</p>
           </div>
         ))}
       </div>

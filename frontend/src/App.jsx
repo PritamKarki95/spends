@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import UploadStatement from './pages/UploadStatement'
 import Transactions from './pages/Transactions'
 import MonthlyComparison from './pages/MonthlyComparison'
+import Subscriptions from './pages/Subscriptions'
 
 function App() {
   return (
@@ -14,6 +15,14 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route
+        path="/subscriptions"
+        element={
+          <ProtectedRoute>
+            <Subscriptions />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/dashboard"
         element={

@@ -1,4 +1,21 @@
-from pydantic import BaseModel, EmailStr
+from datetime import date as calendar_date
+from typing import Literal
+from pydantic import BaseModel, EmailStr, Field, field_validator
+
+
+class TransactionInput(BaseModel):
+    @field_validator('date', check_fields=False)
+    @classmethod
+    def valid_date(cls, value):
+        calendar_date.fromisoformat(value)
+        return value
+
+    @field_validator('date', 'description', 'amount', 'type', check_fields=False, mode='before')
+    @classmethod
+    def non_null(cls, value):
+        if value is None:
+            raise ValueError('This field cannot be null')
+        return value
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -29,12 +46,12 @@ class StatementUploadResponse(BaseModel):
     transaction_count: int
     transactions: list[ExtractedTransactionOut]
 
-class TransactionConfirm(BaseModel):
+class TransactionConfirm(TransactionInput):
     date: str
     description: str
     merchant: str
-    amount: float
-    type: str
+    amount: float = Field(ge=0, allow_inf_nan=False)
+    type: Literal['debit', 'credit']
 
 
 class ConfirmImportRequest(BaseModel):
@@ -55,20 +72,20 @@ class ConfirmImportResponse(BaseModel):
     imported_count: int
     transactions: list[TransactionOut]
 
-class TransactionCreate(BaseModel):
+class TransactionCreate(TransactionInput):
     date: str
     description: str
     merchant: str | None = None
-    amount: float
-    type: str
+    amount: float = Field(ge=0, allow_inf_nan=False)
+    type: Literal['debit', 'credit']
 
 
-class TransactionUpdate(BaseModel):
+class TransactionUpdate(TransactionInput):
     date: str | None = None
     description: str | None = None
     merchant: str | None = None
-    amount: float | None = None
-    type: str | None = None
+    amount: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+    type: Literal['debit', 'credit'] | None = None
     category_id: int | None = None 
 
 class CategoryComparison(BaseModel):

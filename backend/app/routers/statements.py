@@ -92,10 +92,22 @@ def confirm_import(
     statement = (
         db.query(models.Statement)
         .filter(models.Statement.id == statement_id, models.Statement.user_id == current_user.id)
+        .with_for_update()
         .first()
     )
     if not statement:
         raise HTTPException(status_code=404, detail="Statement not found.")
+
+    already_imported = db.query(models.Transaction.id).filter(
+        models.Transaction.statement_id == statement.id,
+        models.Transaction.user_id == current_user.id,
+    ).first()
+    if statement.status == "imported" or already_imported:
+        raise HTTPException(status_code=409, detail="This statement has already been imported.")
+    if statement.status != "processed":
+        raise HTTPException(status_code=409, detail="This statement is not ready to import.")
+    if not payload.transactions:
+        raise HTTPException(status_code=422, detail="Select at least one transaction to import.")
 
     created = []
     for t in payload.transactions:
@@ -118,6 +130,7 @@ def confirm_import(
         db.add(txn)
         created.append(txn)
 
+    statement.status = "imported"
     db.commit()
     for txn in created:
         db.refresh(txn)

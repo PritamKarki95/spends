@@ -103,6 +103,14 @@ def update_transaction(
         raise HTTPException(status_code=404, detail="Transaction not found.")
 
     update_data = payload.model_dump(exclude_unset=True)
+    if update_data.get("category_id") is not None:
+        category = db.query(models.Category).filter(
+            models.Category.id == update_data["category_id"],
+            or_(models.Category.user_id == current_user.id,
+                (models.Category.user_id.is_(None)) & (models.Category.is_default.is_(True))),
+        ).first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found.")
     if "date" in update_data:
         update_data["date"] = datetime.strptime(update_data["date"], "%Y-%m-%d").date()
 
@@ -116,6 +124,21 @@ def update_transaction(
         merchant=txn.merchant, amount=float(txn.amount), type=txn.type,
         category=txn.category.name if txn.category else None,
     )
+
+
+@router.delete("/all", status_code=200)
+def delete_all_transactions(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    count = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id
+    ).delete()
+    db.query(models.Subscription).filter(
+        models.Subscription.user_id == current_user.id
+    ).delete()
+    db.commit()
+    return {"deleted_count": count}
 
 
 @router.delete("/{transaction_id}", status_code=204)
