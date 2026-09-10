@@ -22,7 +22,9 @@ function Landing() {
 
         <Reveal>
           <div className="relative text-center">
-            <img src={logo} alt="SpendS" className="h-16 w-16 rounded-2xl mx-auto mb-6" />
+            <Link to="/" aria-label="SpendS home" className="block w-fit mx-auto mb-6 rounded-2xl">
+              <img src={logo} alt="SpendS" className="h-16 w-16 rounded-2xl" />
+            </Link>
             <h1 className="font-display text-4xl md:text-5xl font-semibold text-ink dark:text-white">
               Spend<span className="text-teal">S</span>
             </h1>

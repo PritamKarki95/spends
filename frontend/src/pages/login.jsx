@@ -46,7 +46,9 @@ function Login() {
           <path d="M0 200 C150 260, 50 380, 200 420 C320 450, 180 600, 350 650 L400 800 L0 800 Z" fill="url(#loginWave)" />
         </svg>
         <div className="relative text-center px-12">
-          <img src={logo} alt="SpendS" className="h-16 w-16 rounded-2xl mx-auto mb-6" />
+          <Link to="/" aria-label="SpendS home" className="block w-fit mx-auto mb-6 rounded-2xl">
+              <img src={logo} alt="SpendS" className="h-16 w-16 rounded-2xl" />
+            </Link>
           <h1 className="font-display text-3xl font-semibold text-white mb-3">Know where your money goes.</h1>
           <p className="text-white/60 text-sm max-w-xs mx-auto">
             Upload a statement and SpendS shows you exactly what changed, month to month.

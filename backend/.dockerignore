@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+uploads/
+ml_models/
+.pytest_cache/
+tests/
+demo_transactions.csv

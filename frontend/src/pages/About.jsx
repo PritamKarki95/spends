@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, FileUp, Tags, ChartNoAxesCombined, Repeat2, ScanLine, TrendingUp, Code2, Layers, Sun, Moon } from 'lucide-react'
 import logo from '../assets/logo-mark.png'
 import Reveal from '../components/Reveal'
@@ -15,15 +15,22 @@ const FEATURES = [
 ]
 
 export default function About() {
+  const navigate = useNavigate()
   const [dark, setDark] = useTheme()
+  const isLoggedIn = Boolean(localStorage.getItem('token'))
+  const homePath = isLoggedIn ? '/dashboard' : '/'
+  function handleBack() {
+    if (window.history.state?.idx > 0) navigate(-1)
+    else navigate('/', { replace: true })
+  }
   return (
     <div className="min-h-screen flex flex-col bg-mist dark:bg-[#0A1F2E] font-sans text-ink dark:text-white transition-colors">
       <header className="border-b border-line dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-          <Link to="/" className="inline-flex items-center gap-2 font-display font-semibold text-lg"><img src={logo} alt="" className="h-8 w-8 rounded-lg" /><span>Spend<span className="text-teal">S</span></span></Link>
+          <Link to={homePath} className="inline-flex items-center gap-2 font-display font-semibold text-lg"><img src={logo} alt="" className="h-8 w-8 rounded-lg" /><span>Spend<span className="text-teal">S</span></span></Link>
           <div className="flex items-center gap-4">
             <button onClick={() => setDark(!dark)} aria-label="Toggle dark mode" className="rounded-full border border-line dark:border-white/20 p-2">{dark ? <Sun size={17} /> : <Moon size={17} />}</button>
-            <Link to="/" className="inline-flex items-center gap-2 text-sm text-ink/60 dark:text-white/60 hover:text-teal"><ArrowLeft size={16} aria-hidden="true" />Back home</Link>
+            <button type="button" onClick={handleBack} className="inline-flex items-center gap-2 text-sm text-ink/60 dark:text-white/60 hover:text-teal"><ArrowLeft size={16} aria-hidden="true" />Back</button>
           </div>
         </div>
       </header>
@@ -36,7 +43,7 @@ export default function About() {
               <p className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-teal mb-5"><Layers size={15} aria-hidden="true" />Behind the project</p>
               <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.12]">Your spending.<br /><span className="text-teal">A clearer story.</span></h1>
               <p className="mt-6 max-w-xl text-base sm:text-lg text-ink/65 dark:text-white/65 leading-relaxed">SpendS turns financial statements into a view you can actually explore. Less time sorting transactions. More context for the question: what changed this month, and why?</p>
-              <Link to="/register" className="inline-flex items-center gap-2 mt-7 px-5 py-3 rounded-xl bg-ocean text-white text-sm font-medium hover:opacity-90 transition-opacity">Explore your spending<ArrowRight size={17} aria-hidden="true" /></Link>
+              <Link to={isLoggedIn ? '/dashboard' : '/register'} className="inline-flex items-center gap-2 mt-7 px-5 py-3 rounded-xl bg-ocean text-white text-sm font-medium hover:opacity-90 transition-opacity">Explore your spending<ArrowRight size={17} aria-hidden="true" /></Link>
             </Reveal>
             <Reveal delay={120}>
               <div className="surface p-6 sm:p-8 relative">
