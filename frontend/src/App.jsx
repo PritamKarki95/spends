@@ -8,6 +8,7 @@ import UploadStatement from './pages/UploadStatement'
 import Transactions from './pages/Transactions'
 import MonthlyComparison from './pages/MonthlyComparison'
 import Subscriptions from './pages/Subscriptions'
+import About from './pages/About'
 
 function App() {
   return (
@@ -55,6 +56,8 @@ function App() {
     </ProtectedRoute>
   }
 />
+<Route path="/about" element={<About />} />
+
     </Routes>
   )
 }
