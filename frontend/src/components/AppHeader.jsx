@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Menu, X, Sun, Moon } from 'lucide-react'
 import { useTheme } from '../hooks/useTheme'
@@ -10,35 +10,13 @@ const NAV_LINKS = [
   { to: '/transactions', label: 'Transactions' },
   { to: '/comparison', label: 'Comparison' },
   { to: '/subscriptions', label: 'Subscriptions' },
+  { to: '/about', label: 'About' },
 ]
 
 function AppHeader() {
   const navigate = useNavigate()
   const [dark, setDark] = useTheme()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    const controller = new AbortController()
-    const token = localStorage.getItem('token')
-    async function loadUser() {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/auth/me', {
-          headers: { Authorization: `Bearer ${token}` },
-          signal: controller.signal,
-        })
-        if (response.ok) {
-          const account = await response.json()
-          if (!controller.signal.aborted) setUser(account)
-        }
-      } catch {
-        // Keep navigation usable if account details are temporarily unavailable.
-      }
-    }
-    loadUser()
-    return () => controller.abort()
-  }, [])
-
   function handleLogout() {
     localStorage.removeItem('token')
     navigate('/login')
@@ -84,10 +62,6 @@ function AppHeader() {
           </button>
         </div>
       </div>
-
-      <p className="max-w-6xl mx-auto px-6 pb-3 text-sm text-ink/70 dark:text-white/70 break-words">
-        {user ? <>Hello, <span className="font-medium text-teal">{user.email.split('@')[0].toUpperCase()}</span></> : 'Welcome to SpendS'}
-      </p>
 
       {menuOpen && (
         <div id="mobile-navigation" className="page-enter lg:hidden border-t border-line dark:border-white/10 px-6 py-4 space-y-3">

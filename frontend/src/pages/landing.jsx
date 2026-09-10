@@ -1,3 +1,4 @@
+import ProjectFooter from '../components/ProjectFooter'
 import { Link } from 'react-router-dom'
 import logo from '../assets/logo-mark.png'
 import Reveal from '../components/Reveal'
@@ -5,7 +6,7 @@ import Reveal from '../components/Reveal'
 function Landing() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-mist dark:bg-[#0A1F2E] transition-colors">
-      <main className="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-6">
+      <main className="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-6 py-16">
         <svg
           className="absolute inset-0 w-full h-full opacity-[0.06] pointer-events-none"
           viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"
@@ -47,11 +48,7 @@ function Landing() {
         </Reveal>
       </main>
 
-      <footer className="text-center pb-8">
-        <Link to="/about" className="text-sm text-ink/40 dark:text-white/40 hover:text-ink/70 dark:hover:text-white/70 transition-colors">
-          About this project
-        </Link>
-      </footer>
+      <ProjectFooter />
     </div>
   )
 }

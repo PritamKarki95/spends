@@ -48,7 +48,19 @@ function Subscriptions() {
     }
   }
 
-  useEffect(() => { fetchSubscriptions() }, [])
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch('http://127.0.0.1:8000/subscriptions', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      signal: controller.signal,
+    }).then(async response => {
+      if (!response.ok) throw new Error('Failed to load subscriptions')
+      return response.json()
+    }).then(data => { if (!controller.signal.aborted) setSubscriptions(data) })
+      .catch(err => { if (!controller.signal.aborted) setError(err.message) })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false) })
+    return () => controller.abort()
+  }, [])
 
   const totalMonthly = subscriptions.reduce((sum, s) => sum + s.avg_amount, 0)
 

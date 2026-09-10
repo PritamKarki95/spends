@@ -35,6 +35,29 @@ function WaveAccent() {
 }
 
 function Dashboard() {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const token = localStorage.getItem('token')
+    async function loadUser() {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        })
+        if (response.ok) {
+          const account = await response.json()
+          if (!controller.signal.aborted) setUser(account)
+        }
+      } catch {
+        // Keep the dashboard usable if account details are temporarily unavailable.
+      }
+    }
+    loadUser()
+    return () => controller.abort()
+  }, [])
+
   const [comparison, setComparison] = useState(null)
   const [transactions, setTransactions] = useState([])
   const [error, setError] = useState('')
@@ -106,6 +129,9 @@ function Dashboard() {
       <section className="relative overflow-hidden border-b border-line dark:border-white/10">
         <WaveAccent />
         <div className="max-w-6xl mx-auto px-6 py-12 relative">
+          <p className="mb-3 text-lg font-display text-ink dark:text-white break-words">
+            {user ? <>Hello, <span className="font-semibold text-teal">{user.email.split('@')[0].toUpperCase()}</span></> : 'Welcome to SpendS'}
+          </p>
           <p className="text-sm text-ink/60 dark:text-white/50 mb-2">{monthLabel(CURRENT.year, CURRENT.month)}</p>
           {loading && <Skeleton rows={1} label="Loading spending summary" />}
           {error && <p role="alert" className="text-red-600 dark:text-red-400">{error}</p>}
