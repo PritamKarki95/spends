@@ -1,6 +1,6 @@
 # SpendS — Smart Spending
 
-A full-stack financial statement intelligence platform. Upload a bank/credit card statement (PDF) and SpendS extracts, categorizes, and explains your spending — with a focus on one core question: **what changed since last month, and why?**
+A full-stack financial statement intelligence platform. Upload a bank/credit card statement (PDF) and SpendS extracts, categorizes, and explains your spending with a focus on one core question: **what changed since last month, and why?**
 
 **Live app:** https://spends-frontend.onrender.com
 **API docs:** https://spends-backend.onrender.com/docs
@@ -167,4 +167,4 @@ Documented honestly, not hidden:
 
 ## Project background
 
-Built as a portfolio project to demonstrate full-stack, ML, and DevOps capability for Software Engineering, AI/ML, and backend-focused internship applications. Developed in 22 phases, from initial architecture through deployment, with an emphasis on defensible, explainable decisions over impressive-sounding but unverified claims — every metric cited in this README comes from an actual measured run, not an estimate.
+Built as a portfolio project to demonstrate full-stack, ML, and DevOps capability for Software Engineering, AI/ML, and backend-focused internship applications. Developed in 22 phases, from initial architecture through deployment, with an emphasis on defensible, explainable decisions over impressive-sounding but unverified claims, every metric cited in this README comes from an actual measured run, not an estimate.
