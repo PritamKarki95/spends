@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config'
 import SpendingCharts from '../components/SpendingCharts'
 import { Skeleton, EmptyState } from '../components/Feedback'
 import { useState, useEffect } from 'react'
@@ -42,7 +43,7 @@ function Dashboard() {
     const token = localStorage.getItem('token')
     async function loadUser() {
       try {
-        const response = await fetch('http://127.0.0.1:8000/auth/me', {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
         })
@@ -75,10 +76,10 @@ function Dashboard() {
       const end = `${CURRENT.year}-${String(CURRENT.month).padStart(2, '0')}-${new Date(CURRENT.year, CURRENT.month, 0).getDate()}`
 
       const [compRes, txnRes, subRes, anomRes] = await Promise.all([
-        fetch(`http://127.0.0.1:8000/comparisons/months/${CURRENT.year}/${CURRENT.month}/${PREVIOUS.year}/${PREVIOUS.month}`, { headers }),
-        fetch('http://127.0.0.1:8000/transactions', { headers }),
-        fetch('http://127.0.0.1:8000/subscriptions', { headers }),
-        fetch('http://127.0.0.1:8000/anomalies', { headers }),
+        fetch(`${API_BASE_URL}/comparisons/months/${CURRENT.year}/${CURRENT.month}/${PREVIOUS.year}/${PREVIOUS.month}`, { headers }),
+        fetch(`${API_BASE_URL}/transactions`, { headers }),
+        fetch(`${API_BASE_URL}/subscriptions`, { headers }),
+        fetch(`${API_BASE_URL}/anomalies`, { headers }),
       ])
 
       if (![compRes, txnRes, subRes, anomRes].every(r => r.ok)) throw new Error('Unable to load dashboard data. Please refresh to try again.')

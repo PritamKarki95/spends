@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config'
 import { Skeleton, EmptyState, Toast } from '../components/Feedback'
 import { useState, useEffect } from 'react'
 import { Repeat } from 'lucide-react'
@@ -15,7 +16,7 @@ function Subscriptions() {
   async function fetchSubscriptions() {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://127.0.0.1:8000/subscriptions', {
+      const response = await fetch(`${API_BASE_URL}/subscriptions`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!response.ok) throw new Error('Failed to load subscriptions')
@@ -33,7 +34,7 @@ function Subscriptions() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://127.0.0.1:8000/subscriptions/detect', {
+      const response = await fetch(`${API_BASE_URL}/subscriptions/detect`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -50,7 +51,7 @@ function Subscriptions() {
 
   useEffect(() => {
     const controller = new AbortController()
-    fetch('http://127.0.0.1:8000/subscriptions', {
+    fetch(`${API_BASE_URL}/subscriptions`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       signal: controller.signal,
     }).then(async response => {

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config'
 import { useState, useEffect } from 'react'
 import { Skeleton, EmptyState, Toast } from '../components/Feedback'
 import AppHeader from '../components/AppHeader'
@@ -27,7 +28,7 @@ function Transactions() {
     const controller = new AbortController()
     const token = localStorage.getItem('token')
 
-    fetch('http://127.0.0.1:8000/transactions', {
+    fetch(`${API_BASE_URL}/transactions`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: controller.signal,
     })
@@ -60,7 +61,7 @@ function Transactions() {
     setError('')
     try {
     const token = localStorage.getItem('token')
-    const response = await fetch(`http://127.0.0.1:8000/transactions/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -91,7 +92,7 @@ function Transactions() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://127.0.0.1:8000/transactions', {
+      const response = await fetch(`${API_BASE_URL}/transactions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ function Transactions() {
     setError('')
     try {
     const token = localStorage.getItem('token')
-    const response = await fetch(`http://127.0.0.1:8000/transactions/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -149,7 +150,7 @@ function Transactions() {
     setClearMessage('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://127.0.0.1:8000/transactions/all', {
+      const response = await fetch(`${API_BASE_URL}/transactions/all`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       })

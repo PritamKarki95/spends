@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config'
 import { Skeleton, EmptyState } from '../components/Feedback'
 import { useState, useEffect, useRef } from 'react'
 import AppHeader from '../components/AppHeader'
@@ -23,7 +24,7 @@ function MonthlyComparison() {
     async function load() {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`http://127.0.0.1:8000/comparisons/months/${currentMonth.year}/${currentMonth.month}/${previousMonth.year}/${previousMonth.month}`, {
+        const response = await fetch(`${API_BASE_URL}/comparisons/months/${currentMonth.year}/${currentMonth.month}/${previousMonth.year}/${previousMonth.month}`, {
           headers: { Authorization: `Bearer ${token}` }, signal: controller.signal,
         })
         if (!response.ok) throw new Error('Failed to load comparison')
@@ -69,7 +70,7 @@ function MonthlyComparison() {
     setDetailLoading(true)
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`http://127.0.0.1:8000/comparisons/months/${currentMonth.year}/${currentMonth.month}/${previousMonth.year}/${previousMonth.month}/category/${encodeURIComponent(categoryName)}`, { headers: { Authorization: `Bearer ${token}` } })
+      const response = await fetch(`${API_BASE_URL}/comparisons/months/${currentMonth.year}/${currentMonth.month}/${previousMonth.year}/${previousMonth.month}/category/${encodeURIComponent(categoryName)}`, { headers: { Authorization: `Bearer ${token}` } })
       if (!response.ok) throw new Error('Failed to load category details')
       const data = await response.json()
       if (request === detailRequest.current) setMerchantData(data)
@@ -93,7 +94,7 @@ function MonthlyComparison() {
     setDetailLoading(true)
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`http://127.0.0.1:8000/comparisons/months/${currentMonth.year}/${currentMonth.month}/category/${encodeURIComponent(expandedCategory)}/merchant/${encodeURIComponent(merchantName)}`, { headers: { Authorization: `Bearer ${token}` } })
+      const response = await fetch(`${API_BASE_URL}/comparisons/months/${currentMonth.year}/${currentMonth.month}/category/${encodeURIComponent(expandedCategory)}/merchant/${encodeURIComponent(merchantName)}`, { headers: { Authorization: `Bearer ${token}` } })
       if (!response.ok) throw new Error('Failed to load merchant transactions')
       const data = await response.json()
       if (request === detailRequest.current) setMerchantTransactions(data)

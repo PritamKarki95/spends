@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config'
 import { Link } from 'react-router-dom'
 import { Check, Upload, FileCheck, CheckCircle2 } from 'lucide-react'
 import { Skeleton, EmptyState, Toast } from '../components/Feedback'
@@ -24,7 +25,7 @@ function UploadStatement() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://127.0.0.1:8000/statements/upload', {
+      const response = await fetch(`${API_BASE_URL}/statements/upload`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -64,7 +65,7 @@ function UploadStatement() {
     try {
       const token = localStorage.getItem('token')
       const response = await fetch(
-        `http://127.0.0.1:8000/statements/${statementId}/confirm`,
+        `${API_BASE_URL}/statements/${statementId}/confirm`,
         {
           method: 'POST',
           headers: {
