@@ -1,4 +1,4 @@
-# SpendS — Smart Spending
+# SpendS — Spend Smart
 
 A full-stack financial statement intelligence platform. Upload a bank/credit card statement (PDF) and SpendS extracts, categorizes, and explains your spending with a focus on one core question: **what changed since last month, and why?**
 
